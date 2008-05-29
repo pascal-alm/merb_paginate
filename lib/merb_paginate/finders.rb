@@ -7,6 +7,12 @@ if Object.const_defined? "DataMapper"
   # better than using Gem.loaded_specs as RubyGems is not required
   target = DataMapper.const_defined?('Base') ? 'Base' : 'Resource'
   DataMapper::const_get(target).class_eval { include MerbPaginate::Finders::Datamapper }
+
+  DataMapper::Resource.descendents.each { |resource|
+    # Take care of DataMapper::Resource descendents (sic)
+    # that have already been declared
+    resource.class_eval { include MerbPaginate::Finders::Datamapper }
+  } if target == 'Resource'
 end
 
 if Object.const_defined? "Sequel"
