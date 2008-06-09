@@ -1,3 +1,7 @@
-class Post < DataMapper::Base
-  property :title, :string
+class Post
+  include DataMapper::Resource
+  include MerbPaginate::Finders::Datamapper
+  
+  property :id, Integer, :serial => true
+  property :title, String
 end

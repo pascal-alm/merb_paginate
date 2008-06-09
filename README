@@ -33,9 +33,17 @@ platform, let me know.
 Usage
 =====
 
-Using this plugin is like so in init.rb:
+Using this plugin is like so in your model:
 
-  dependency 'merb_paginate'
+  class Post
+    include DataMapper::Resource
+    include MerbPaginate::Finders::Datamapper
+    
+    property ...
+    ...
+  end
+  
+**You also must have 'dm-aggregates' as a dependency in you init.rb.**
 
 Right now, DataMapper and ActiveRecord work (Sequel might work, let me know). 
 I hope to have a fully speced paginate finder for each orm evenutally. 

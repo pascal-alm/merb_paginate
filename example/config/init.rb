@@ -10,4 +10,4 @@ end
 use_orm :datamapper
 use_test :rspec
 
-dependencies 'merb-haml', 'merb_paginate'
+dependencies 'merb-haml', 'dm-aggregates', 'merb_paginate'
