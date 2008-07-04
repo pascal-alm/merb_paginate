@@ -78,9 +78,7 @@ describe  "Collection" do
      end
     2.should == collection.previous_page
     nil.should == collection.next_page
-    
-    
-    
+   
   end
 =begin
   def test_out_of_bounds

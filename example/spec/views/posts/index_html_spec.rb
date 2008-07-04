@@ -54,10 +54,11 @@ describe_view Posts, :index do
     tmp = []
       (0..21).each{|i| tmp << Post.new(:title=>"test#{i}")}  
       tmp.nitems.should == 22
-      @assigns[:posts] = WillPaginate::Collection.create(2,20){|pager| pager.replace(tmp)}
+      @assigns[:posts] = WillPaginate::Collection.create(1,20,22){|pager| pager.replace(tmp)}
       #Post.paginate :page => params[:page], :per_page => 20
+       @assigns[:posts].total_pages.should == 2
        render
-
+     
        @content.should match(/<ul.*?>(.*)<\/ul>/m)
          @content =~ /<ul.*?>(.*)<\/ul>/m #above doesnt set $1
          submatch = $1
