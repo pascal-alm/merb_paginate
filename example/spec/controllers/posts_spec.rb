@@ -121,7 +121,7 @@ describe Posts, "#index" do
 
          (inner / 'a')[0].inner_html.should =~ /Previous/
          (inner / 'a').nitems.should == 2 # no next or page 2 links
-         #puts "can print text too but twice:" # + (inner / 'a')[0].inner_html
+         #puts "can print text too but runs twice because 2 pagination classes:" 
          inner.should be_contain("Next")
          inner.inner_html.should =~ /Previous<\/a>/
        end 
@@ -144,5 +144,29 @@ describe Posts, "#index" do
   end
   
   
-  it "basics" 
+  it "timings for 100 calls with generated view" do
+     start = Time.now
+    (1..100).each{|i|
+      @response = dispatch_to(Posts, :index, {:limit=>rand(200), :page=> (1 + i.divmod(6)[1])})
+      @response.should respond_successfully
+    }
+    p "#{Time.now - start} seconds for 100 calls random pages"
+    
+     start = Time.now
+    (1..100).each{|i|
+      @response = dispatch_to(Posts, :index, {:limit=>rand(200)})
+      @response.should respond_successfully
+    }
+    p "#{Time.now - start} seconds for 100 calls first page"
+    
+     start = Time.now
+    (1..100).each{|i|
+      @response = dispatch_to(Posts, :index, {:limit=>200 + rand(200)})
+      @response.should respond_successfully
+    }
+    p "#{Time.now - start} seconds for 100 calls high limit"
+    
+    
+  end
+     
 end
