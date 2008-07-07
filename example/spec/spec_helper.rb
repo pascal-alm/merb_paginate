@@ -28,7 +28,7 @@ if $specs_timed.nil?
   at_exit do
     $timings = $timings.sort{|a,b| a.first <=> b.first}
     total_time = $timings.map{|a|a.first}.inject(1){|a,b|a+b}
-    slow_time = (ENV['SLOW'] || (total_time / $timings.size * 8) rescue 0).to_f 
+    slow_time = (ENV['SLOW'] || (total_time / $timings.size / 8) rescue 0).to_f 
     slow_timings = $timings.select{|t|t.first > slow_time}
     unless slow_timings.empty?
       slow_total = 0.0
