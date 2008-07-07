@@ -27,11 +27,11 @@ describe Posts, "#index" do
     @response.should respond_successfully
     @response.body.should =~ /<ul/
     
-    #some of these should fail :( 
-    @response.body.should have_tag('ul') do
-            match_tag('li', :content=>'test1xxx')
-            be_include('test1')
-            be_include('/body>')
+    #hpricot elem tests
+    @response.body.should have_tag('ul') do |tag|
+            tag.should be_match('The first post')
+            tag.inner_text.should be_match('The first post')
+            tag.inner_text.should_not be_match('/body>')
           end
     @content = @response.body
     
@@ -43,10 +43,91 @@ describe Posts, "#index" do
     @content.should have_selector('li[@id=post_1]') 
   end
   
-   
+  it "should render with 20 objects without paginators" do
+    @response = dispatch_to(Posts, :index, {:limit=>20})
+    @response.should respond_successfully
+    @content = @response.body
+    
+    
+    @content.should match(/<ul.*?>(.*)<\/ul>/m)
+      @content =~ /<ul.*?>(.*)<\/ul>/m #above doesnt set $1
+      submatch = $1
+      submatch.should match(/<li.*?>.*Post number 11.*<\/li>/m)
+      submatch.should match(/<li.*?>.*Post number 20.*<\/li>/m)
+      submatch.should_not match(/<li.*?>.*Post number 21.*<\/li>/m) 
+      
+      @content.should_not have_selector('div[@class=pagination]')         #pagination links not displayed
+  end 
   
-  it "basics" do
-    #@response.should render_template(:index)
-    @response.body.should == "a"
+  it "should render with 21 objects with paginators" do
+    @response = dispatch_to(Posts, :index, {:limit=>21})
+    @response.should respond_successfully
+    @content = @response.body
+    
+    
+    @content.should match(/<ul.*?>(.*)<\/ul>/m)
+      @content =~ /<ul.*?>(.*)<\/ul>/m 
+      submatch = $1
+      submatch.should match(/<li.*?>.*Post number 11.*<\/li>/m)
+      submatch.should match(/<li.*?>.*Post number 20.*<\/li>/m)
+      submatch.should_not match(/<li.*?>.*Post number 21.*<\/li>/m)    # on page 2
+      
+    @content.should have_selector('div[@class=pagination]')         
+    #links enabled/disabled based on first/last page
+    @content.should_not =~ /Previous<\/a>/         
+    @content.should =~ /Next &raquo;<\/a>/
+    
+    @content.should have_tag('div',:class=>'pagination') do |inner|
+     #wordier but same
+      does_include_prev = nil
+      does_include_next = nil
+      (inner / 'a').each do |tag|
+        does_include_prev = true if tag.inner_text =~ /Previous/
+        does_include_next = true if tag.inner_text =~ /Next/
+            end
+      does_include_prev.should be_nil 
+      does_include_next.should be_true
+    end
   end
+  
+  it "should be able to go directly to page 2 with 21 objects " do
+    @response = dispatch_to(Posts, :index, {:limit=>21, :page=>2})
+    @response.should respond_successfully
+    @content = @response.body
+    
+    
+    @content.should match(/<ul.*?>(.*)<\/ul>/m)
+      @content =~ /<ul.*?>(.*)<\/ul>/m 
+      submatch = $1
+      submatch.should_not match(/<li.*?>.*Post number 11.*<\/li>/m)
+      submatch.should_not match(/<li.*?>.*Post number 20.*<\/li>/m)
+      submatch.should match(/<li.*?>.*Post number 21.*<\/li>/m)    # on page 2
+      
+    @content.should have_selector('div[@class=pagination]')
+    #links enabled/disabled based on first/last page
+    @content.should =~ /Previous<\/a>/         
+    @content.should_not =~ /Next &raquo;<\/a>/  
+
+    #merby way
+    @content.should have_tag('div',:class=>'pagination')
+    @content.should have_tag('div',:class=>'pagination') do |inner|
+      inner.inner_html.should =~ /Previous/
+   
+      (inner / 'a')[0].inner_html.should =~ /Previous/
+      (inner / 'a').nitems.should == 2 # no next or page 2 links
+      inner.should be_contain("Next")
+      inner.inner_html.should =~ /Previous<\/a>/ 
+      
+      #wordier but same
+      does_include_prev = nil
+      does_include_next = nil
+      (inner / 'a').each do |tag|
+        does_include_prev = true if tag.inner_text =~ /Previous/
+        does_include_next = true if tag.inner_text =~ /Next/
+            end
+      does_include_prev.should be_true
+      does_include_next.should be_nil
+    end
+  end
+  it "basics" 
 end
