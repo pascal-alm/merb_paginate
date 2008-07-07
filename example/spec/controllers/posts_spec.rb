@@ -31,7 +31,7 @@ describe Posts, "#index" do
     @response.body.should have_tag('ul') do |tag|
             tag.should be_match('The first post')
             tag.inner_text.should be_match('The first post')
-            tag.inner_text.should_not be_match('/body>')
+            tag.to_html.should_not be_match('/body>')
           end
     @content = @response.body
     
@@ -115,6 +115,7 @@ describe Posts, "#index" do
    
       (inner / 'a')[0].inner_html.should =~ /Previous/
       (inner / 'a').nitems.should == 2 # no next or page 2 links
+      puts "can print text too but twice:" # + (inner / 'a')[0].inner_html
       inner.should be_contain("Next")
       inner.inner_html.should =~ /Previous<\/a>/ 
       
