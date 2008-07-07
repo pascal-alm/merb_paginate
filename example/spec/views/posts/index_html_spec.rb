@@ -35,7 +35,7 @@ describe_view Posts, :index do
       end
     
   end
-
+=begin
   it "should render with 20 objects without paginators" do
     #tmp = []
     (0..21).each{|i| @assigns[:posts] << Post.new(:title=>"test#{i}")}  
@@ -66,6 +66,6 @@ describe_view Posts, :index do
          submatch.should match(/<li.*?>.*test20.*<\/li>/m)
          submatch.should_not match(/<li.*?>.*test21.*<\/li>/m) #should not be visible yet
    end
-  
+=end  
   
 end
