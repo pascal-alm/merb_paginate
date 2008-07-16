@@ -144,29 +144,6 @@ describe Posts, "#index" do
   end
   
   
-  it "timings for 100 calls with generated view" do
-     start = Time.now
-    (1..100).each{|i|
-      @response = dispatch_to(Posts, :index, {:limit=>rand(200), :page=> (1 + i.divmod(6)[1])})
-      @response.should respond_successfully
-    }
-    p "#{Time.now - start} seconds for 100 calls random pages"
-    
-     start = Time.now
-    (1..100).each{|i|
-      @response = dispatch_to(Posts, :index, {:limit=>rand(200)})
-      @response.should respond_successfully
-    }
-    p "#{Time.now - start} seconds for 100 calls first page"
-    
-     start = Time.now
-    (1..100).each{|i|
-      @response = dispatch_to(Posts, :index, {:limit=>200 + rand(200)})
-      @response.should respond_successfully
-    }
-    p "#{Time.now - start} seconds for 100 calls high limit"
-    
-    
-  end
+  
      
 end
